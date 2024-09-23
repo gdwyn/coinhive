@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var coinsVM = CoinsViewModel()
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Text("\(coinsVM.coin) : \(coinsVM.price)")
         }
         .padding()
     }
