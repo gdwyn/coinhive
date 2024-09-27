@@ -9,22 +9,37 @@ import Foundation
 
 @Observable
 class CoinsViewModel {
-    var coin = ""
-    var price = 0.00
-    
+    var coins = [Coin]()
+    var errorMsg : String?
+
     var coinService = CoinDataService()
     
     init() {
-        fetchPrice(coin: "litecoin")
+        fetchCoins()
     }
     
-    func fetchPrice(coin: String) {
-        coinService.fetchPrice(coin: coin) { price in
+    func fetchCoins() {
+        coinService.fetchCoins { result in
             DispatchQueue.main.async {
-                self.price = price
-                self.coin = coin
+                switch result {
+                case .success(let coins):
+                    self.coins = coins
+                case .failure(let error):
+                    self.errorMsg = error.localizedDescription
+                }
             }
         }
+        
+//        coinService.fetchCoins { coins, error in
+//            DispatchQueue.main.async {
+//                if let error = error {
+//                    self.errorMsg = error.localizedDescription
+//                    return
+//                }
+//                
+//                self.coins = coins ?? []
+//            }
+//        }
     }
    
 }
