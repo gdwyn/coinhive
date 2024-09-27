@@ -10,10 +10,16 @@ import SwiftUI
 struct ContentView: View {
     @State var coinsVM = CoinsViewModel()
     var body: some View {
-        VStack {
-            Text("\(coinsVM.coin) : \(coinsVM.price)")
+        List {
+            ForEach(coinsVM.coins) { coin in
+                Text(coin.name + " " + coin.symbol)
+            }
         }
-        .padding()
+        .overlay {
+            if let error = coinsVM.errorMsg {
+                Text(error)
+            }
+        }
     }
 }
 
