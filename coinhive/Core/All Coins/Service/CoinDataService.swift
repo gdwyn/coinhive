@@ -8,9 +8,30 @@
 import Foundation
 
 class CoinDataService {
-    let urlString = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=gbp&order=market_cap_desc&per_page=40&page=1&sparkline=false&price_change_percentage=24h&precision=2"
+    let urlString = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=gbp&order=market_cap_desc&per_page=40&page=1&sparkline=true&price_change_percentage=24h&precision=2"
     
-    func fetchCoins(completion: @escaping(Result<[Coin], CoinAPIError>) -> Void) {
+    func fetchCoins() async throws -> [Coin] {
+        guard let url = URL(string: urlString) else { return [] }
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let coins = try JSONDecoder().decode([Coin].self, from: data)
+            return coins
+        } catch {
+            print("ERROR: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+}
+
+
+
+
+// MARK: Completion handler
+
+extension CoinDataService {
+    func fetchCoinsWithResult(completion: @escaping(Result<[Coin], CoinAPIError>) -> Void) {
         guard let url = URL(string: urlString) else { return }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -35,7 +56,7 @@ class CoinDataService {
             }
             
             do {
-                let coins = try? JSONDecoder().decode([Coin].self, from: data)
+                let coins = try JSONDecoder().decode([Coin].self, from: data)
                 completion(.success(coins))
             } catch {
                 print("DEBUG: error, \(error.localizedDescription)")
@@ -45,42 +66,4 @@ class CoinDataService {
             
         }.resume()
     }
-    
-    
-//    func fetchPrice(coin: String, completion: @escaping(Double) -> Void) {
-//        let urlString = "https://api.coingecko.com/api/v3/simple/price?ids=\(coin)&vs_currencies=usd"
-//        guard let url = URL(string: urlString) else { return }
-//        
-//        URLSession.shared.dataTask(with: url) { data, response, error in
-//            
-//            if let error = error {
-//                print("DEBUG: \(error.localizedDescription)")
-//            }
-//            
-//            guard let httpResponse = response as? HTTPURLResponse else {
-//                print("Bad http request")
-//                return
-//            }
-//            
-//            guard httpResponse.statusCode == 200 else {
-//                print("Not 200")
-//                return
-//            }
-//            
-//            guard let data = data else { return }
-//            guard let jsonObject = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return }
-//            guard let value = jsonObject[coin] as? [String: Double] else {
-//                print("failed to parse value")
-//                return
-//            }
-//            guard let price = value["usd"] else { return }
-//            
-//            //                self.coin = coin.capitalized
-//            //                self.price = "$\(price)"
-//            completion(price)
-//            
-//        }.resume()
-//        
-//        print("did reach end of function")
-//    }
 }
