@@ -12,7 +12,7 @@ class CoinsViewModel {
     var coins = [Coin]()
     
     var topGainers: [Coin] {
-        return Array(self.coins.sorted(by: { $0.marketCap > $1.marketCap }).prefix(10))
+        return Array(self.coins.sorted(by: { $0.priceChangePercentage > $1.priceChangePercentage }).prefix(10))
     }
     
     var errorMsg : String?
