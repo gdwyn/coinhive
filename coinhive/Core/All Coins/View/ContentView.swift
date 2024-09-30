@@ -9,15 +9,25 @@ import SwiftUI
 
 struct ContentView: View {
     @State var coinsVM = CoinsViewModel()
+    @State var prog = 0.00
     var body: some View {
-        List {
-            ForEach(coinsVM.coins) { coin in
-                Text(coin.name + " " + coin.symbol)
+        NavigationStack {
+            VStack {
+                Image("coinhive")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 48)
+                
+                ScrollView(showsIndicators: false) {
+                    TopGainers(coins: coinsVM.topGainers)
+                    
+                    CoinList(coins: coinsVM.coins)
+                }
             }
-        }
-        .overlay {
-            if let error = coinsVM.errorMsg {
-                Text(error)
+            .overlay {
+                if let error = coinsVM.errorMsg {
+                    Text(error)
+                }
             }
         }
     }

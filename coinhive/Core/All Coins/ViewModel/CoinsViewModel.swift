@@ -10,38 +10,38 @@ import Foundation
 @Observable
 class CoinsViewModel {
     var coins = [Coin]()
+    
+    var topGainers: [Coin] {
+        return Array(self.coins.sorted(by: { $0.priceChangePercentage > $1.priceChangePercentage }).prefix(10))
+    }
+    
     var errorMsg : String?
 
     var coinService = CoinDataService()
     
     init() {
-        fetchCoins()
+        Task {
+           try await fetchCoins()
+        }
     }
     
-    func fetchCoins() {
-        // use [weak self] to avoid retain cycles and memory leaks
-        coinService.fetchCoins { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let coins):
-                    self?.coins = coins
-                case .failure(let error):
-                    self?.errorMsg = error.localizedDescription
-                }
-            }
-        }
-        
-//        coinService.fetchCoins { coins, error in
+    func fetchCoins() async throws {
+        self.coins = try await coinService.fetchCoins()
+    }
+    
+//    func fetchCoinWithCompletionHandler() {
+//        // use [weak self] to avoid retain cycles and memory leaks
+//        coinService.fetchCoinsWithResult { [weak self] result in
 //            DispatchQueue.main.async {
-//                if let error = error {
-//                    self.errorMsg = error.localizedDescription
-//                    return
+//                switch result {
+//                case .success(let coins):
+//                    self?.coins = coins
+//                case .failure(let error):
+//                    self?.errorMsg = error.localizedDescription
 //                }
-//                
-//                self.coins = coins ?? []
 //            }
 //        }
-    }
+//    }
    
 }
 
