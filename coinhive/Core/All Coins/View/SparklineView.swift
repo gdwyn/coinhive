@@ -59,7 +59,7 @@ struct SparklineView: View {
                 .trim(from: 0, to: progress)
                 .stroke(lineColor, lineWidth: 1)
                 .onAppear {
-                    withAnimation(.smooth(duration: 1.5)) {
+                    withAnimation(.smooth(duration: 2)) {
                         progress = 1.0
                     }
                 }

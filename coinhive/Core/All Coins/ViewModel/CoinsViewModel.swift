@@ -12,8 +12,7 @@ class CoinsViewModel {
     var coins = [Coin]()
     
     var topGainers: [Coin] {
-        // Sort coins by market cap in descending order and take the top 5
-        return Array(self.coins.sorted(by: { $0.marketCap > $1.marketCap }).prefix(5))
+        return Array(self.coins.sorted(by: { $0.marketCap > $1.marketCap }).prefix(10))
     }
     
     var errorMsg : String?
