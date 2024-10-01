@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State var coinsVM = CoinsViewModel()
     @State var prog = 0.00
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -18,16 +19,18 @@ struct ContentView: View {
                     .scaledToFit()
                     .frame(height: 48)
                 
-                ScrollView(showsIndicators: false) {
-                    TopGainers(coins: coinsVM.topGainers)
-                    
-                    CoinList(coins: coinsVM.coins)
-                }
-            }
-            .overlay {
                 if let error = coinsVM.errorMsg {
                     Text(error)
+                } else {
+                    ScrollView(showsIndicators: false) {
+                        TopGainers(coins: coinsVM.topGainers)
+                        
+                        CoinList(coins: coinsVM.coins)
+                    }
                 }
+            }
+            .task {
+                try? await coinsVM.fetchCoins()
             }
         }
     }
