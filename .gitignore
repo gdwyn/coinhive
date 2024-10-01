@@ -2,3 +2,5 @@
 coinhive.xcodeproj/project.xcworkspace/xcuserdata/user.xcuserdatad/UserInterfaceState.xcuserstate
 *.xcuserstate
 *.xcuserstate
+.DS_Store
+coinhive/.DS_Store
