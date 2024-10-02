@@ -8,6 +8,7 @@
 import Foundation
 
 enum CoinAPIError: Error {
+    case invalidURL
     case invalidData
     case jsonParsingFailure
     case requestFailed(description: String)
@@ -16,6 +17,8 @@ enum CoinAPIError: Error {
     
     var customDescription: String {
         switch self {
+        case .invalidURL:
+            return "Invalid URL"
         case .invalidData:
             return "Invalid data"
         case .jsonParsingFailure:
@@ -23,7 +26,7 @@ enum CoinAPIError: Error {
         case .requestFailed(let description):
             return "Request failed \(description )"
         case .invalidStatusCode(let code):
-            return "Invalid status code: \(code)"
+            return "\(code) There is a problem with the server"
         case .unknownError(let error):
             return "An unknown error occured: \(error.localizedDescription)"
         }

@@ -8,21 +8,22 @@
 import Foundation
 
 class CoinDataService {
-    let urlString = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=gbp&order=market_cap_desc&per_page=40&page=1&sparkline=true&price_change_percentage=24h&precision=2"
+    let BASE_URL = "https://api.coingecko.com/api/v3/coins/"
     
-    func fetchCoins() async throws -> [Coin] {
-        guard let url = URL(string: urlString) else { return [] }
+    func fetchCoins(pageLimit: Int, page: Int) async throws -> [Coin] {
+        let urlString = "\(BASE_URL)markets?vs_currency=gbp&order=market_cap_desc&per_page=\(pageLimit)&page=\(page)&sparkline=true&price_change_percentage=24h&precision=2"
         
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let coins = try JSONDecoder().decode([Coin].self, from: data)
-            return coins
-        } catch {
-            print("ERROR: \(error.localizedDescription)")
-            return []
-        }
+        guard let url = URL(string: urlString) else { throw CoinAPIError.invalidURL}
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw CoinAPIError.invalidStatusCode(code: (response as? HTTPURLResponse)?.statusCode ?? 404)} //server error
+        
+        guard let coins = try? JSONDecoder().decode([Coin].self, from: data) else { throw CoinAPIError.invalidData }
+        
+        return coins
+        
     }
-    
 }
 
 
@@ -32,6 +33,8 @@ class CoinDataService {
 
 extension CoinDataService {
     func fetchCoinsWithResult(completion: @escaping(Result<[Coin], CoinAPIError>) -> Void) {
+        let urlString = "\(BASE_URL)markets?vs_currency=gbp&order=market_cap_desc&per_page=40&page=1&sparkline=true&price_change_percentage=24h&precision=2"
+        
         guard let url = URL(string: urlString) else { return }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
