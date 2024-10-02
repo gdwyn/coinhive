@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct TopGainers: View {
-    var coins: [Coin]
-    
+    @EnvironmentObject var coinsVM: CoinsViewModel
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Top gainers")
@@ -19,7 +19,7 @@ struct TopGainers: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 14) {
-                    ForEach(coins) { topCoin in
+                    ForEach(coinsVM.topGainers) { topCoin in
                         VStack(alignment: .leading) {
                             AsyncImage(url: URL(string: topCoin.image)) { image in
                                 image

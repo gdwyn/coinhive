@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CoinList: View {
-    var coins: [Coin]
+    @EnvironmentObject var coinsVM: CoinsViewModel
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -17,7 +17,7 @@ struct CoinList: View {
                 .fontWeight(.semibold)
             
             LazyVStack(alignment: .leading, spacing: 8) {
-                ForEach(coins) { coin in
+                ForEach(coinsVM.coins) { coin in
                     VStack {
                         HStack {
                             HStack(spacing: 12) {
@@ -71,6 +71,13 @@ struct CoinList: View {
                         Divider()
                             .frame(alignment: .bottom)
                             .foregroundStyle(.gray.opacity(0.2))
+                    }
+                    .onAppear {
+                        if coin.id == coinsVM.coins.last?.id {
+                            Task {
+                                coinsVM.LoadCoins()
+                            }
+                        }
                     }
                 }
             }

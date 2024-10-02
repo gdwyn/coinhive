@@ -8,17 +8,22 @@
 import Foundation
 
 @Observable
-class CoinsViewModel {
+class CoinsViewModel: ObservableObject {
+    //using ObservableObject conformance because .environmentObject macro does not conform to @Observable macro
     var coinService = CoinDataService()
     var coins = [Coin]()
     var topGainers: [Coin] {
         return Array(self.coins.sorted(by: { $0.priceChangePercentage > $1.priceChangePercentage }).prefix(10))
     }
     var errorMsg : String?
+    
+    var pageLimit = 20
+    var page = 0
 
     func fetchCoins() async throws {
         do {
-            self.coins = try await coinService.fetchCoins()
+            page += 1
+            self.coins.append(contentsOf: try await coinService.fetchCoins(pageLimit: pageLimit, page: page))
             
         } catch let coinError as CoinAPIError { // catch custom errors
             self.errorMsg = coinError.customDescription
@@ -26,6 +31,18 @@ class CoinsViewModel {
         } catch { // catch generic errors
             self.errorMsg = error.localizedDescription
         }
+    }
+    
+    func LoadCoins() {
+        Task(priority: .medium) {
+            try await fetchCoins()
+        }
+    }
+    
+    func refreshCoins() async {
+        coins.removeAll()
+        page = 0
+        try? await fetchCoins()
     }
     
     

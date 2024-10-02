@@ -10,8 +10,8 @@ import Foundation
 class CoinDataService {
     let BASE_URL = "https://api.coingecko.com/api/v3/coins/"
     
-    func fetchCoins() async throws -> [Coin] {
-        let urlString = "\(BASE_URL)markets?vs_currency=gbp&order=market_cap_desc&per_page=40&page=1&sparkline=true&price_change_percentage=24h&precision=2"
+    func fetchCoins(pageLimit: Int, page: Int) async throws -> [Coin] {
+        let urlString = "\(BASE_URL)markets?vs_currency=gbp&order=market_cap_desc&per_page=\(pageLimit)&page=\(page)&sparkline=true&price_change_percentage=24h&precision=2"
         
         guard let url = URL(string: urlString) else { throw CoinAPIError.invalidURL}
         

@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct coinhiveApp: App {
+    @State var coinsVM = CoinsViewModel()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AllCoinsView()
+                .environmentObject(coinsVM)
         }
     }
 }

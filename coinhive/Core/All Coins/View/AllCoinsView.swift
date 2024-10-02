@@ -7,9 +7,8 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    @State var coinsVM = CoinsViewModel()
-    @State var prog = 0.00
+struct AllCoinsView: View {
+    @EnvironmentObject var coinsVM: CoinsViewModel
     
     var body: some View {
         NavigationStack {
@@ -22,20 +21,23 @@ struct ContentView: View {
                 if let error = coinsVM.errorMsg {
                     Text(error)
                 } else {
-                    ScrollView(showsIndicators: false) {
-                        TopGainers(coins: coinsVM.topGainers)
+                    ScrollView(showsIndicators: true) {
+                        TopGainers()
                         
-                        CoinList(coins: coinsVM.coins)
+                        CoinList()
+                    }
+                    .refreshable {
+                        await coinsVM.refreshCoins()
                     }
                 }
             }
             .task {
-                try? await coinsVM.fetchCoins()
+                coinsVM.LoadCoins()
             }
         }
     }
 }
 
 #Preview {
-    ContentView()
+    AllCoinsView()
 }
